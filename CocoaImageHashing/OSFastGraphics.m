@@ -521,23 +521,46 @@ inline OSHashType ahash_rgba_8_8(const unsigned char *pixels)
     INLINE_DHASH(row, 4);   \
     INLINE_DHASH(row, 5);   \
     INLINE_DHASH(row, 6);   \
-    INLINE_DHASH(row, 7);   \
-    pixels += 4; /*skip last column*/
+    INLINE_DHASH(row, 7);
+
+#define UNROLL_DHASH_Y_FIRST(row) \
+    INLINE_DHASH(row, 0);   \
+    greyFirst = greyLeft;   \
+    INLINE_DHASH(row, 1);   \
+    INLINE_DHASH(row, 2);   \
+    INLINE_DHASH(row, 3);   \
+    INLINE_DHASH(row, 4);   \
+    INLINE_DHASH(row, 5);   \
+    INLINE_DHASH(row, 6);   \
+    INLINE_DHASH(row, 7);
+
+#define UNROLL_DHASH_Y_LAST(row) \
+    INLINE_DHASH(row, 0);        \
+    INLINE_DHASH(row, 1);        \
+    INLINE_DHASH(row, 2);        \
+    INLINE_DHASH(row, 3);        \
+    INLINE_DHASH(row, 4);        \
+    INLINE_DHASH(row, 5);        \
+    INLINE_DHASH(row, 6);        \
+    /*wrap last pixel to first*/ \
+    if (greyRight > greyFirst) { \
+        SETBIT(result, cnt);     \
+    }
 
 #define UNROLL_DHASH_X() \
-    UNROLL_DHASH_Y(0);   \
-    UNROLL_DHASH_Y(1);   \
-    UNROLL_DHASH_Y(2);   \
-    UNROLL_DHASH_Y(3);   \
-    UNROLL_DHASH_Y(4);   \
-    UNROLL_DHASH_Y(5);   \
-    UNROLL_DHASH_Y(6);   \
-    UNROLL_DHASH_Y(7);
+    UNROLL_DHASH_Y_FIRST(0); \
+    UNROLL_DHASH_Y(1);       \
+    UNROLL_DHASH_Y(2);       \
+    UNROLL_DHASH_Y(3);       \
+    UNROLL_DHASH_Y(4);       \
+    UNROLL_DHASH_Y(5);       \
+    UNROLL_DHASH_Y(6);       \
+    UNROLL_DHASH_Y_LAST(7);
 
-inline OSHashType dhash_rgba_9_9(const unsigned char *pixels)
+inline OSHashType dhash_rgba_8_8(const unsigned char *pixels)
 {
     OSHashType result = 0;
-    double greyLeft = 0.0, greyRight = 0.0;
+    double greyFirst = 0.0, greyLeft = 0.0, greyRight = 0.0;
     unsigned char redLeft = 0, redRight = 0, greenLeft = 0, greenRight = 0, blueLeft = 0, blueRight = 0, cnt = 0;
     UNROLL_DHASH_X();
     return result;
@@ -545,6 +568,8 @@ inline OSHashType dhash_rgba_9_9(const unsigned char *pixels)
 
 #undef UNROLL_DHASH_X
 #undef CHECL_ROW_DHASH
+#undef UNROLL_DHASH_Y_FIRST
+#undef UNROLL_DHASH_Y_LAST
 #undef INLINE_DHASH
 
 #undef GREYSCALE

@@ -10,9 +10,9 @@
 #import "OSDHash.h"
 #import "OSFastGraphics.h"
 
-static const NSUInteger OSDHashImageWidthInPixels = 9;
-static const NSUInteger OSDHashImageHeightInPixels = 9;
-static const OSHashDistanceType OSDHashDistanceThreshold = 9;
+static const NSUInteger OSDHashImageWidthInPixels = 8;
+static const NSUInteger OSDHashImageHeightInPixels = 8;
+static const OSHashDistanceType OSDHashDistanceThreshold = 8;
 
 @implementation OSDHash
 
@@ -26,7 +26,7 @@ static const OSHashDistanceType OSDHashDistanceThreshold = 9;
     if (!pixels) {
         return OSHashTypeError;
     }
-    OSHashType result = dhash_rgba_9_9([pixels bytes]);
+    OSHashType result = dhash_rgba_8_8([pixels bytes]);
     return result;
 }
 
